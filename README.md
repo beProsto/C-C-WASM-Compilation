@@ -10,4 +10,4 @@ To compile and run the project on your own, you're going to have to run the `run
 
 This is how it looks like finished:
 
-![screenshot](it_all_works.png)
+![screenshot](It_all_works.png)
