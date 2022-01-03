@@ -31,20 +31,24 @@
 	We read it from the start to finish (when byte hidden under the pointer is NULL) 
 	And print the result out on the screen :D -->
 <script type="module">
+	// well - it's one of the ways to go about it ^^'
+	// this buffer will gather our text before "flushing" it into the console :D
+	let console_log_buffer = "";
+
 	async function init() {
 		const { instance } = await WebAssembly.instantiateStreaming(
-			fetch("./llvm/main.wasm")
+			fetch("./llvm/main.wasm"),
+			{
+				env: {
+					// functions to import to our wasm code
+					__wasm_import_console_log_add_to_buffer: (a) => { console_log_buffer += String.fromCharCode(a); },
+					__wasm_import_console_log_flush_buffer: () => { console.log(console_log_buffer); console_log_buffer = ""; }
+				}
+			}
 		);
-
-		let str = "";
-
-		let i = instance.exports.hello_str();
-		const buff = new Uint8Array(instance.exports.memory.buffer);
-		for(; buff[i] != 0; i++) {
-			str += String.fromCharCode(buff[i]);
-		}
-
-		console.log(str);
+		
+		// simply runs the "hello" function we defined in our c++
+		instance.exports.hello();
 	}
 	init();
 </script>

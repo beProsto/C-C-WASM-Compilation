@@ -7,12 +7,11 @@ echo Finished!
 echo ---
 
 echo Compiling the llvm code:
-:: the llvm toolchain's compilation split up into two seperate parts for no actual reason;
-powershell clang --target=wasm32 -c src/llvm/main.cpp -o build/llvm/main.o
-powershell wasm-ld --no-entry --export-all -o build/llvm/main.wasm build/llvm/main.o
-:: this is how it looks like in one command
+:: compiles the simpler, c file that simply exports 1 function
 powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' -o build/llvm/func.wasm src/llvm/func.c 
-
+:: compiles the weirder c++ file that not only exports a function, but also imports a couple
+:: ('-Wl,--allow-undefined' let's us define functions that our js code imports without needing to write any implementation for them in the c++ code)
+powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' '-Wl,--allow-undefined' -o build/llvm/main.wasm src/llvm/main.cpp
 echo Finished!
 echo ---
 
