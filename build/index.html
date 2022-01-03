@@ -1,0 +1,50 @@
+<meta charset="utf-8">
+<style>
+	* {
+		background-color: rgb(75, 75, 75);
+		color: rgb(220, 220, 220);
+	}
+</style>
+
+
+<!-- this is just because I don't expect everyone to want to open up the console -->
+<script>
+	console.log = (str) => {
+		document.body.innerHTML += "<h1>" + str + "</h1>";
+	}
+</script>
+
+<!-- emscripten is very easy to use - not that easy to install however -->
+<script src="emscripten/main.js"></script>
+
+<!-- simpler things done with wasm are easy to use -->
+<script type="module">
+	(async () => {
+		const { instance } = await WebAssembly.instantiateStreaming(
+			fetch("./llvm/func.wasm")
+		);
+		console.log("func's result: " + instance.exports.function_name(3, 2));
+	})();
+</script>
+
+<!-- Here we have a function that returns the address to the start of a static string 
+	We read it from the start to finish (when byte hidden under the pointer is NULL) 
+	And print the result out on the screen :D -->
+<script type="module">
+	async function init() {
+		const { instance } = await WebAssembly.instantiateStreaming(
+			fetch("/llvm/main.wasm")
+		);
+
+		let str = "";
+
+		let i = instance.exports.hello_str();
+		const buff = new Uint8Array(instance.exports.memory.buffer);
+		for(; buff[i] != 0; i++) {
+			str += String.fromCharCode(buff[i]);
+		}
+
+		console.log(str);
+	}
+	init();
+</script>
