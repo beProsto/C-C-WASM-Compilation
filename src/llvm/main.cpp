@@ -10,7 +10,7 @@ void console_log(const char* _str) {
 	__wasm_import_console_log_flush_buffer();
 }
 
-char HELLO_WORLD_STR[] = "LLVM Compiled and run succsessfully!";
+const char* HELLO_WORLD_STR = "LLVM Compiled and run succsessfully!";
 
 // as opposed to C, in C++ the compiler will do weird things to the function names in the binary
 // (because namespaces etc)
