@@ -33,7 +33,7 @@
 <script type="module">
 	async function init() {
 		const { instance } = await WebAssembly.instantiateStreaming(
-			fetch("/llvm/main.wasm")
+			fetch("./llvm/main.wasm")
 		);
 
 		let str = "";
