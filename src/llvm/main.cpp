@@ -19,8 +19,8 @@ extern "C" void __wasm_set_winreqanim_callback(void (*_cb)()) {
 
 
 // import memory stuff
-extern "C" void* malloc(unsigned int);
-extern "C" void free(void*);
+extern "C" void* __wasm_import_malloc(unsigned int);
+extern "C" void __wasm_import_free(void*);
 
 
 const char* HELLO_WORLD_STR = "LLVM Compiled and run succsessfully!";
@@ -49,7 +49,7 @@ extern "C" void hello() {
 
 	__wasm_import_console_log_str("Testing malloc:");
 
-	int* a = (int*)malloc(5 * sizeof(int));
+	int* a = (int*)__wasm_import_malloc(5 * sizeof(int));
 	int* b = a;
 
 	*b = 5;
@@ -63,7 +63,7 @@ extern "C" void hello() {
 		__wasm_import_console_log_num(a[i]);
 	}
 
-	free(a);
+	__wasm_import_free(a);
 	
 	__wasm_import_console_log_str("Testing malloc ended!");
 	

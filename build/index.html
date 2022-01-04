@@ -67,8 +67,8 @@
 					__wasm_import_winreqanim_call: () => {
 						frameId = window.requestAnimationFrame(instance.exports.__wasm_export_winreqanim_exec);
 					},
-					malloc: (len) => wasmMalloc(len),
-					free: (ptr) => wasmFree(ptr)
+					__wasm_import_malloc: (len) => wasmMalloc(len),
+					__wasm_import_free: (ptr) => wasmFree(ptr)
 				}
 			}
 		);
