@@ -14,17 +14,17 @@
 	};
 </script>
 
+<!-- emscripten is very easy to use - not that easy to install however -->
+<script src="emscripten/main.js"></script>
+
 <script>
+	let frameId;
 	window.onkeydown = (e) => {
-		if(e.which == 27) {
-			window.cancelAnimationFrame();
-			console.log("Stopped!");
-		}
+		window.cancelAnimationFrame(frameId);
+		console.log("Stopped!");
 	};
 </script>
 
-<!-- emscripten is very easy to use - not that easy to install however -->
-<script src="emscripten/main.js"></script>
 
 <!-- simpler things done with wasm are easy to use -->
 <script type="module">
@@ -57,8 +57,7 @@
 						console.log(text_buffer);
 					},
 					__wasm_import_winreqanim_call: () => {
-						// set reqanimframe to the callback
-						window.requestAnimationFrame(instance.exports.__wasm_export_winreqanim_exec);
+						frameId = window.requestAnimationFrame(instance.exports.__wasm_export_winreqanim_exec);
 					}
 				}
 			}
