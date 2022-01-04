@@ -11,7 +11,16 @@
 <script>
 	console.log = (str) => {
 		document.body.innerHTML += "<h1>" + str + "</h1>";
-	}
+	};
+</script>
+
+<script>
+	window.onkeydown = (e) => {
+		if(e.which == 27) {
+			window.cancelAnimationFrame();
+			console.log("Stopped!");
+		}
+	};
 </script>
 
 <!-- emscripten is very easy to use - not that easy to install however -->
@@ -60,3 +69,4 @@
 	}
 	init();
 </script>
+
