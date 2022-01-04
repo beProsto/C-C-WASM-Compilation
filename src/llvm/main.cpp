@@ -1,6 +1,7 @@
 // This imports the functions we defined in JS, in the "env" block
 // extern "C" void __wasm_import_console_log_str(const char*);
 extern "C" void __wasm_import_console_log_str(const char*);
+extern "C" void __wasm_import_console_log_num(int);
 // calls window.requestAnimationFrame, passing the __wasm_export_winreqanim_exec function as the one to play on the frame
 extern "C" void __wasm_import_winreqanim_call();
 
@@ -15,6 +16,11 @@ extern "C" void __wasm_set_winreqanim_callback(void (*_cb)()) {
 	__wasm_winreqanim_callback = _cb;
 	__wasm_import_winreqanim_call();
 }
+
+
+// import memory stuff
+extern "C" void* malloc(unsigned int);
+extern "C" void free(void*);
 
 
 const char* HELLO_WORLD_STR = "LLVM Compiled and run succsessfully!";
@@ -40,6 +46,28 @@ void animation_frame_first() {
 extern "C" void hello() {
 	__wasm_import_console_log_str(HELLO_WORLD_STR);
 	__wasm_import_console_log_str("If you wish to stop the Animation Frame cycle (the text that keeps on being printed), press Escape.");
+
+	__wasm_import_console_log_str("Testing malloc:");
+
+	int* a = (int*)malloc(5 * sizeof(int));
+	int* b = a;
+
+	*b = 5;
+	b++;
+	*b = 10;
+	b++;
+	*b = 63;
+	
+
+	for(int i = 0; i < 5; i++) {
+		__wasm_import_console_log_num(a[i]);
+	}
+
+	free(a);
+	
+	__wasm_import_console_log_str("Testing malloc ended!");
+	
+
 
 	pointer_to_animation_frame_first = animation_frame_first;
 	__wasm_set_winreqanim_callback(pointer_to_animation_frame_first);

@@ -40,6 +40,11 @@
 	We read it from the start to finish (when byte hidden under the pointer is NULL) 
 	And print the result out on the screen :D -->
 <script type="module">
+	let wasmMalloc, wasmFree;
+	
+	let instance_ref;
+
+
 	async function init() {
 		const { instance } = await WebAssembly.instantiateStreaming(
 			fetch("./llvm/main.wasm"),
@@ -56,16 +61,40 @@
 
 						console.log(text_buffer);
 					},
+					__wasm_import_console_log_num: (_num) => {
+						console.log(_num);
+					},
 					__wasm_import_winreqanim_call: () => {
 						frameId = window.requestAnimationFrame(instance.exports.__wasm_export_winreqanim_exec);
-					}
+					},
+					malloc: (len) => wasmMalloc(len),
+					free: (ptr) => wasmFree(ptr)
 				}
 			}
 		);
-		
-		// simply runs the "hello" function we defined in our c++
-		instance.exports.hello();
+		instance_ref = instance;
 	}
-	init();
+	await init();
+
+	async function init2() {
+		const { instance } = await WebAssembly.instantiateStreaming(
+			fetch("./memory.wasm"),
+			{
+				env: {
+					memory: instance_ref.exports.memory
+				}
+			}
+		);
+
+		wasmMalloc = instance.exports.malloc;
+		wasmFree = instance.exports.free;
+
+		console.log("Memory loaded!");
+	}
+
+	await init2();
+	
+	// simply runs the "hello" function we defined in our c++
+	instance_ref.exports.hello();
 </script>
 
