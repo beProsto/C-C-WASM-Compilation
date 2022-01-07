@@ -96,5 +96,31 @@
 	
 	// simply runs the "hello" function we defined in our c++
 	instance_ref.exports.hello();
+
+	
+	async function init3() {
+		const { instance } = await WebAssembly.instantiateStreaming(
+			fetch("./wat/testin_it.wasm"),
+			{
+				env: {
+					console_log_number: (_num) => {console.log("This log has been imported into the wasm module: " + _num)},
+					console_log_string: (_ptr) => {
+						const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+						let text_buffer = "";
+						
+						for(; memory_buffer[_ptr] != 0; _ptr++) {
+							text_buffer += String.fromCharCode(memory_buffer[_ptr]);
+						}
+
+						console.log(text_buffer);
+					}
+				}
+			}
+		);
+		
+		console.log("Testing the wat to wasm compilation: " + instance.exports.testing_attention_please(2, 3));
+	}
+
+	await init3();
 </script>
 

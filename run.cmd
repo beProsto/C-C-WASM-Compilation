@@ -15,6 +15,12 @@ powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' '
 echo Finished!
 echo ---
 
+echo Compiling the WAT code:
+:: uses wat2wasm tool from wabt toolkit
+powershell wat2wasm src/wat/testin_it.wat -o build/wat/testin_it.wasm
+echo Finished!
+echo ---
+
 cd build
 echo Running the Server on http://localhost:8080/
 :: runs a python server to show the results
