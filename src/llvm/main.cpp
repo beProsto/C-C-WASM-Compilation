@@ -56,7 +56,8 @@ extern "C" void hello() {
 
 	__wasm_import_console_log_str("Testing malloc:");
 
-	int* a = (int*)0;
+	// allocation
+	int* a = make<int>(5);
 	int* b = a;
 
 	*b = 5;
@@ -69,8 +70,8 @@ extern "C" void hello() {
 	for(int i = 0; i < 5; i++) {
 		__wasm_import_console_log_num(a[i]);
 	}
-
-	// free(a);
+	// deallocation
+	free(a);
 	
 	__wasm_import_console_log_str("Testing malloc ended!");
 	
