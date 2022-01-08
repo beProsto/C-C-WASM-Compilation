@@ -11,7 +11,7 @@ echo Compiling the llvm code:
 powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' -o build/llvm/func.wasm src/llvm/func.c 
 :: compiles the weirder c++ file that not only exports a function, but also imports a couple
 :: ('-Wl,--allow-undefined' let's us define functions that our js code imports without needing to write any implementation for them in the c++ code)
-powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' '-Wl,--allow-undefined' -o build/llvm/main.wasm src/llvm/main.cpp
+powershell clang --target=wasm32 -nostdlib '-Wl,--no-entry' '-Wl,--export-all' '-Wl,--allow-undefined' -o build/llvm/main.wasm src/llvm/main.cpp src/llvm/utils/src/malloc.c src/llvm/utils/src/winreqanim.cpp
 echo Finished!
 echo ---
 

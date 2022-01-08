@@ -12,6 +12,10 @@ To compile and run the project on your own, you're going to have to run the `run
 
 [Check out the build here (a page that loads the compiled code)!](https://beprosto.github.io/C-CPP-WASM-Compilation/build/)
 
+A giant shoutout to @maxkl for creating a genious [wasm-malloc](https://github.com/maxkl/wasm-malloc) repo, that I got the malloc implementation from.
+
+It just needed a small change. :D
+
 This is how it looks like finished:
 
 ![screenshot](It_all_works.png)
