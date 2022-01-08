@@ -36,7 +36,7 @@ extern "C" void hello() {
 	
 
 	for(int i = 0; i < 5; i++) {
-		__wasm_import_console_log_num(a[i]);
+		console_log(a[i]);
 	}
 	// deallocation
 	free(a);
