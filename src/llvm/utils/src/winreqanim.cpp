@@ -8,5 +8,4 @@ extern "C" void __wasm_export_winreqanim_callback_execute() {
 // sets the callback to one we'd need and then calls the window.requestAnimationFrame function
 void __wasm_set_winreqanim_callback(void (*_cb)()) {
 	__wasm_winreqanim_callback = _cb;
-	__wasm_import_winreqanim_call();
 }

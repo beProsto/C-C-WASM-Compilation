@@ -14,14 +14,18 @@
 	};
 </script>
 
+<canvas id="vancas" width="800px" height="600px"></canvas>
+
 <!-- emscripten is very easy to use - not that easy to install however -->
 <script src="emscripten/main.js"></script>
 
 <script>
 	let frameId;
 	window.onkeydown = (e) => {
-		window.cancelAnimationFrame(frameId);
-		console.log("Stopped!");
+		if(e.which == 27) {
+			window.cancelAnimationFrame(frameId);
+			console.log("Stopped!");
+		}
 	};
 </script>
 
@@ -32,7 +36,7 @@
 		const { instance } = await WebAssembly.instantiateStreaming(
 			fetch("./llvm/func.wasm")
 		);
-		console.log("func's result: " + instance.exports.function_name(3, 2));
+		console.log("result of func(3,2): " + instance.exports.function_name(3, 2));
 	})();
 </script>
 
@@ -41,31 +45,91 @@
 	And print the result out on the screen :D -->
 <script type="module">
 	async function init() {
-		const { instance } = await WebAssembly.instantiateStreaming(
-			fetch("./llvm/main.wasm"),
-			{
-				env: {
-					// functions to import to our wasm code
-					__wasm_import_console_log_str: (_ptr) => {
-						const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
-						let text_buffer = "";
-						
-						for(; memory_buffer[_ptr] != 0; _ptr++) {
-							text_buffer += String.fromCharCode(memory_buffer[_ptr]);
-						}
+		let instance;
+		let console_write_buffer = "";
+		
+		let mouse_pos_y_get = () => { return 10; };
+		let mouse_pos_x_get = () => { return 10; };
 
-						console.log(text_buffer);
-					},
-					__wasm_import_console_log_num: (_num) => {
-						console.log(_num);
-					},
-					__wasm_import_winreqanim_call: () => {
-						frameId = window.requestAnimationFrame(instance.exports.__wasm_export_winreqanim_callback_execute);
+		let animFrame = () => {};
+
+		let c2d;
+
+		const module = await WebAssembly.instantiateStreaming(
+			fetch("./llvm/main.wasm"), { env: {
+				// functions to import to our wasm code
+				__wasm_import_console_log_str: (_ptr) => {
+					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					let text_buffer = "";
+					
+					for(; memory_buffer[_ptr] != 0; _ptr++) {
+						text_buffer += String.fromCharCode(memory_buffer[_ptr]);
 					}
-				}
-			}
+
+					console.log(text_buffer);
+				},
+				__wasm_import_console_log_num: (_num) => {
+					console.log(_num);
+				},
+				__wasm_import_console_write_str: (_ptr) => {
+					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					
+					for(; memory_buffer[_ptr] != 0; _ptr++) {
+						if(memory_buffer[_ptr] == 10) {
+							console.log(console_write_buffer);
+							console_write_buffer = "";
+						}
+						else {
+							console_write_buffer += String.fromCharCode(memory_buffer[_ptr]);
+						}
+					}
+				},
+				__wasm_import_console_write_num: (_num) => {
+					console_write_buffer += _num;
+				},
+				__wasm_import_winreqanim_call: () => {
+					animFrame = () => {
+						instance.exports.__wasm_export_winreqanim_callback_execute();
+
+						const data = new Uint8ClampedArray(instance.exports.memory.buffer, instance.exports.display_ptr, 800 * 600 * 4);
+						const img = new ImageData(data, 800, 600);
+						c2d.putImageData(img, 0, 0);
+
+						frameId = window.requestAnimationFrame(animFrame);
+					}
+					frameId = window.requestAnimationFrame(animFrame);
+				},
+				change_text_in_dom_element: (_id_str, _html_str) => {
+					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					
+					let id_text = "";
+					for(; memory_buffer[_id_str] != 0; _id_str++) {
+						id_text += String.fromCharCode(memory_buffer[_id_str]);
+					}
+					let html_text = "";
+					for(; memory_buffer[_html_str] != 0; _html_str++) {
+						html_text += String.fromCharCode(memory_buffer[_html_str]);
+					}
+
+					document.getElementById(id_text).innerHTML = html_text;
+				},
+				console_timer_start: (_id) => {
+					console.time("Console Timer <" + _id + ">");
+				},
+				console_timer_end: (_id) => {
+					console.timeEnd("Console Timer <" + _id + ">");
+				},
+				mouse_position_x_get: mouse_pos_x_get,
+				mouse_position_y_get: mouse_pos_y_get
+			} }
 		);
+		instance = module.instance;
 		instance.exports.hello();
+		window.onmousemove = (e) => {
+			mouse_pos_y_get = () => { return e.clientY; };
+			mouse_pos_x_get = () => { return e.clientX; };
+		};
+		c2d = document.getElementById("vancas").getContext("2d");
 	}
 	
 	async function init2() {

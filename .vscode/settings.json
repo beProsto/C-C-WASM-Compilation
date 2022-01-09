@@ -1,0 +1,15 @@
+{
+	"files.associations": {
+		"xlocale": "cpp",
+		"__locale": "cpp",
+		"regex": "cpp",
+		"sstream": "cpp",
+		"strstream": "cpp",
+		"random": "cpp",
+		"iosfwd": "cpp",
+		"xstring": "cpp",
+		"__string": "cpp",
+		"string": "cpp",
+		"string_view": "cpp"
+	}
+}
