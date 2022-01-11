@@ -8,10 +8,21 @@
 		line-height: 4px;
 
 	}
+	#flscrn {
+		width: 100px;
+		height: 100px;
+		background-color: rgb(167, 167, 167);
+	}
+	#our {
+		display: flex;
+	}
 </style>
 
 <!-- the drawing surface and the "console" output -->
-<canvas id="vancas" width="800px" height="600px"></canvas>
+<div id="our">
+	<canvas id="vancas" width="800px" height="600px"></canvas>
+	<button id="flscrn">fullscream</button>
+</div>
 <div id="consle"></div>
 
 <!-- this is just because I don't expect everyone to want to open up the console -->
@@ -130,8 +141,11 @@
 				mouse_wheel_get: () => {return mouse_wheel;}
 			} }
 		);
+		// start executing the main function
 		main_instance = module.instance;
 		main_instance.exports.hello();
+		
+		// mouse implementation
 		window.onmousemove = (e) => {
 			mouse_pos_y = e.clientY;
 			mouse_pos_x = e.clientX;
@@ -139,10 +153,23 @@
 		window.onwheel = (e) => {
 			mouse_wheel = e.deltaY;
 		};
+		// touch implementation
+		window.ontouchmove = function(e) { 
+			mouse_pos_x = e.touches[0].clientX;
+			mouse_pos_y = e.touches[0].clientY;
+		};
+		window.ontouchstart = window.ontouchmove;
+
+		// canvas drawing setup
 		c2d = document.getElementById("vancas").getContext("2d");
 		const data = new Uint8ClampedArray(main_instance.exports.memory.buffer, main_instance.exports.display_ptr, 800 * 600 * 4);
 		img = new ImageData(data, 800, 600);
 		c2d.putImageData(img, 0, 0);
+	
+		// make the fs button work!
+		document.getElementById("flscrn").onclick = () => {
+			document.getElementById("vancas").requestFullscreen();
+		};
 	}
 	
 	async function init2() {
