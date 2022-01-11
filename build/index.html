@@ -44,22 +44,23 @@
 	We read it from the start to finish (when byte hidden under the pointer is NULL) 
 	And print the result out on the screen :D -->
 <script type="module">
+	let main_instance;
+	let console_write_buffer = "";
+	
+	let mouse_pos_x = 10;
+	let mouse_pos_y = 10;
+
+	let animFrame = () => {};
+
+	let img;
+	let c2d;
+
 	async function init() {
-		let instance;
-		let console_write_buffer = "";
-		
-		let mouse_pos_y_get = () => { return 10; };
-		let mouse_pos_x_get = () => { return 10; };
-
-		let animFrame = () => {};
-
-		let c2d;
-
 		const module = await WebAssembly.instantiateStreaming(
 			fetch("./llvm/main.wasm"), { env: {
 				// functions to import to our wasm code
 				__wasm_import_console_log_str: (_ptr) => {
-					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					const memory_buffer = new Uint8Array(main_instance.exports.memory.buffer);
 					let text_buffer = "";
 					
 					for(; memory_buffer[_ptr] != 0; _ptr++) {
@@ -72,7 +73,7 @@
 					console.log(_num);
 				},
 				__wasm_import_console_write_str: (_ptr) => {
-					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					const memory_buffer = new Uint8Array(main_instance.exports.memory.buffer);
 					
 					for(; memory_buffer[_ptr] != 0; _ptr++) {
 						if(memory_buffer[_ptr] == 10) {
@@ -89,10 +90,8 @@
 				},
 				__wasm_import_winreqanim_call: () => {
 					animFrame = () => {
-						instance.exports.__wasm_export_winreqanim_callback_execute();
+						main_instance.exports.__wasm_export_winreqanim_callback_execute();
 
-						const data = new Uint8ClampedArray(instance.exports.memory.buffer, instance.exports.display_ptr, 800 * 600 * 4);
-						const img = new ImageData(data, 800, 600);
 						c2d.putImageData(img, 0, 0);
 
 						frameId = window.requestAnimationFrame(animFrame);
@@ -100,7 +99,7 @@
 					frameId = window.requestAnimationFrame(animFrame);
 				},
 				change_text_in_dom_element: (_id_str, _html_str) => {
-					const memory_buffer = new Uint8Array(instance.exports.memory.buffer);
+					const memory_buffer = new Uint8Array(main_instance.exports.memory.buffer);
 					
 					let id_text = "";
 					for(; memory_buffer[_id_str] != 0; _id_str++) {
@@ -119,17 +118,20 @@
 				console_timer_end: (_id) => {
 					console.timeEnd("Console Timer <" + _id + ">");
 				},
-				mouse_position_x_get: mouse_pos_x_get,
-				mouse_position_y_get: mouse_pos_y_get
+				mouse_position_x_get: () => {return mouse_pos_x;},
+				mouse_position_y_get: () => {return mouse_pos_y;}
 			} }
 		);
-		instance = module.instance;
-		instance.exports.hello();
+		main_instance = module.instance;
+		main_instance.exports.hello();
 		window.onmousemove = (e) => {
-			mouse_pos_y_get = () => { return e.clientY; };
-			mouse_pos_x_get = () => { return e.clientX; };
+			mouse_pos_y = e.clientY;
+			mouse_pos_x = e.clientX;
 		};
 		c2d = document.getElementById("vancas").getContext("2d");
+		const data = new Uint8ClampedArray(main_instance.exports.memory.buffer, main_instance.exports.display_ptr, 800 * 600 * 4);
+		img = new ImageData(data, 800, 600);
+		c2d.putImageData(img, 0, 0);
 	}
 	
 	async function init2() {

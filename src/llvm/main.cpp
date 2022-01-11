@@ -30,21 +30,35 @@ inline void set_color(unsigned int _x, unsigned int _y, color_t _c) {
 }
 
 inline void draw_rect(uint32_t _x, uint32_t _y, uint32_t _w, uint32_t _h, color_t _c) {
-	_x = min(_x, WIDTH);
-	_y = min(_y, HEIGHT);
+	// if(_x >= WIDTH) {
+	// 	return;
+	// }
+	// if(_y >= HEIGHT) {
+	// 	return;
+	// }
+	
 
-	if(_x+_w > WIDTH) {
-		_w = _w - (WIDTH - (_x + _w));
-	}
-	if(_x+_h > HEIGHT) {
-		_h = _h - (HEIGHT - (_y + _h));
+	// if(_x+_w > WIDTH) {
+	// 	_w = _w - (WIDTH - (_x + _w));
+	// }
+	// if(_x+_h > HEIGHT) {
+	// 	_h = _h - (HEIGHT - (_y + _h));
+	// }
+	
+	// for(uint32_t i = 0; i <_w*_h; i++) {
+	// 	uint32_t x = i%_w;
+	// 	uint32_t y = i/_h;
+	// 	((color_t*)display)[(_y+y)*WIDTH+(_x+x)] = _c;
+	// }
+
+	for(uint32_t i = _x; i < _x + _w; i++) {
+		for(uint32_t j = _y; j < _y + _h; j++) {
+			set_color(i, j, _c);
+		}
+		
 	}
 	
-	for(uint32_t i = _y*WIDTH+_x; i < _w*_h; i++) {
-		uint32_t x = i%_h;
-		uint32_t y = i/_h;
-		((color_t*)display)[_y*WIDTH+_x] = _c;
-	}
+
 }
 
 // mouse position
@@ -55,13 +69,9 @@ extern "C" {
 
 // this function will define what happens per frame
 void animation_frame() {
-	if(mouse_position_y_get() >= 0 && mouse_position_y_get() < WIDTH - 100 &&
-		mouse_position_y_get() >= 0 && mouse_position_y_get() < HEIGHT - 100) {
-		draw_rect(mouse_position_x_get(), mouse_position_y_get(), 100, 100, color_t{0, 255, 255, 255});
-	}
-
-	// console_log("hyhj=");
-
+	uint32_t mpx = mouse_position_x_get();
+	uint32_t mpy = mouse_position_y_get();
+	draw_rect(mpx, mpy, 100, 100, color_t{0, 255, 255, 255});
 }
 
 // as opposed to C, in C++ the compiler will do weird things to the function names in the binary
@@ -86,10 +96,10 @@ extern "C" void hello() {
 	// console_timer_end(4);
 
 	for(unsigned int i = 0; i < WIDTH*HEIGHT; i++) {
-		unsigned int x = i%HEIGHT;
-		unsigned int y = i/HEIGHT;
-		set_color(x, y, {255, 0, 255, 255});
+		((color_t*)display)[i] = {255, 0, 255, 255};
 	}
+
+	draw_rect(200, 200, 300, 300, {255, 255, 0, 255});
 
 	console_log("If you wish to stop the Animation Frame cycle (the text that keeps on being printed), press Escape.");
 
@@ -108,6 +118,8 @@ extern "C" void hello() {
 	for(int i = 0; i < 5; i++) {
 		cout << "Index " << i << ", Value " << a[i] << '\n';
 	}
+
+
 	// deallocation
 	free(a);
 	console_log("Testing malloc ended!");
