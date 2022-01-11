@@ -65,13 +65,16 @@ inline void draw_rect(uint32_t _x, uint32_t _y, uint32_t _w, uint32_t _h, color_
 extern "C" {
 	int mouse_position_x_get();
 	int mouse_position_y_get();
+	int mouse_wheel_get();
 }
 
 // this function will define what happens per frame
 void animation_frame() {
 	uint32_t mpx = mouse_position_x_get();
 	uint32_t mpy = mouse_position_y_get();
-	draw_rect(mpx, mpy, 100, 100, color_t{0, 255, 255, 255});
+	uint8_t mw = (mouse_wheel_get() > 0? 255 : 0);
+	draw_rect(mpx, mpy, 100, 100, color_t{mw, 255, 255, 255});
+	// cout << "Mouse wheel value: " << mw << "\n";
 }
 
 // as opposed to C, in C++ the compiler will do weird things to the function names in the binary

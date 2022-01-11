@@ -4,17 +4,23 @@
 		background-color: rgb(75, 75, 75);
 		color: rgb(220, 220, 220);
 	}
+	#consle {
+		line-height: 4px;
+
+	}
 </style>
 
+<!-- the drawing surface and the "console" output -->
+<canvas id="vancas" width="800px" height="600px"></canvas>
+<div id="consle"></div>
 
 <!-- this is just because I don't expect everyone to want to open up the console -->
 <script>
+	consl = document.getElementById("consle");
 	console.log = (str) => {
-		document.body.innerHTML += "<h1>" + str + "</h1>";
+		consl.innerHTML += "<p>" + str + "</p>";
 	};
 </script>
-
-<canvas id="vancas" width="800px" height="600px"></canvas>
 
 <!-- emscripten is very easy to use - not that easy to install however -->
 <script src="emscripten/main.js"></script>
@@ -49,6 +55,7 @@
 	
 	let mouse_pos_x = 10;
 	let mouse_pos_y = 10;
+	let mouse_wheel = 0;
 
 	let animFrame = () => {};
 
@@ -119,7 +126,8 @@
 					console.timeEnd("Console Timer <" + _id + ">");
 				},
 				mouse_position_x_get: () => {return mouse_pos_x;},
-				mouse_position_y_get: () => {return mouse_pos_y;}
+				mouse_position_y_get: () => {return mouse_pos_y;},
+				mouse_wheel_get: () => {return mouse_wheel;}
 			} }
 		);
 		main_instance = module.instance;
@@ -127,6 +135,9 @@
 		window.onmousemove = (e) => {
 			mouse_pos_y = e.clientY;
 			mouse_pos_x = e.clientX;
+		};
+		window.onwheel = (e) => {
+			mouse_wheel = e.deltaY;
 		};
 		c2d = document.getElementById("vancas").getContext("2d");
 		const data = new Uint8ClampedArray(main_instance.exports.memory.buffer, main_instance.exports.display_ptr, 800 * 600 * 4);
