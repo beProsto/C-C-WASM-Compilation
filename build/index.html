@@ -33,9 +33,6 @@
 	};
 </script>
 
-<!-- emscripten is very easy to use - not that easy to install however -->
-<script src="emscripten/main.js"></script>
-
 <script>
 	let frameId;
 	window.onkeydown = (e) => {
@@ -51,7 +48,7 @@
 <script type="module">
 	(async () => {
 		const { instance } = await WebAssembly.instantiateStreaming(
-			fetch("./llvm/func.wasm")
+			fetch("./llvm/simple.wasm")
 		);
 		console.log("result of func(3,2): " + instance.exports.function_name(3, 2));
 	})();
