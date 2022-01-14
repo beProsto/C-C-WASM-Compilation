@@ -1,0 +1,16 @@
+* {
+	background-color: rgb(75, 75, 75);
+	color: rgb(220, 220, 220);
+}
+#consle {
+	line-height: 4px;
+
+}
+#flscrn {
+	width: 100px;
+	height: 100px;
+	background-color: rgb(167, 167, 167);
+}
+#our {
+	display: flex;
+}
