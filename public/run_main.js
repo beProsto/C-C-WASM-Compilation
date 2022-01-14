@@ -14,7 +14,7 @@ let c2d;
 
 	// canvas drawing setup
 	c2d = document.getElementById("vancas").getContext("2d");
-	const data = new Uint8ClampedArray(module.instance.exports.memory.buffer, module.instance.exports.display_ptr, 800 * 600 * 4);
+	const data = new Uint8ClampedArray(module.instance.exports.memory.buffer, module.instance.exports.display_ptr_get(), 800 * 600 * 4);
 	img = new ImageData(data, 800, 600);
 	c2d.putImageData(img, 0, 0);
 

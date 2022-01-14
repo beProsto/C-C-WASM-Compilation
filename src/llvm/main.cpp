@@ -8,11 +8,11 @@ extern "C" void console_timer_start(unsigned int);
 extern "C" void console_timer_end(unsigned int);
 
 // create the array
-const int WIDTH = 800, HEIGHT = 600, BPP=4; 
-unsigned char display[WIDTH*HEIGHT*BPP];
+const uint32_t WIDTH = 800, HEIGHT = 600, BPP=4; 
+uint8_t display[WIDTH*HEIGHT*BPP];
 
 // export a pointer to the first element of the array
-extern "C" unsigned char* display_ptr = display;
+extern "C" uint8_t* display_ptr_get() {return &display[0];}
 
 // enum for rgba colour
 struct color_t {
@@ -30,35 +30,11 @@ inline void set_color(unsigned int _x, unsigned int _y, color_t _c) {
 }
 
 inline void draw_rect(uint32_t _x, uint32_t _y, uint32_t _w, uint32_t _h, color_t _c) {
-	// if(_x >= WIDTH) {
-	// 	return;
-	// }
-	// if(_y >= HEIGHT) {
-	// 	return;
-	// }
-	
-
-	// if(_x+_w > WIDTH) {
-	// 	_w = _w - (WIDTH - (_x + _w));
-	// }
-	// if(_x+_h > HEIGHT) {
-	// 	_h = _h - (HEIGHT - (_y + _h));
-	// }
-	
-	// for(uint32_t i = 0; i <_w*_h; i++) {
-	// 	uint32_t x = i%_w;
-	// 	uint32_t y = i/_h;
-	// 	((color_t*)display)[(_y+y)*WIDTH+(_x+x)] = _c;
-	// }
-
 	for(uint32_t i = _x; i < _x + _w; i++) {
 		for(uint32_t j = _y; j < _y + _h; j++) {
 			set_color(i, j, _c);
 		}
-		
 	}
-	
-
 }
 
 // mouse position
